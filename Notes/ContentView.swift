@@ -15,15 +15,23 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
+    
+    @State private var newText = ""
 
     var body: some View {
         NavigationView {
             List {
+                TextField("New Text", text: $newText)
+                
                 ForEach(items) { item in
                     NavigationLink {
                         Text("Item at \(item.timestamp!, formatter: itemFormatter)")
                     } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+                        HStack(alignment: .center) {
+                            Text(item.timestamp!, formatter: itemFormatter)
+                            Text(item.text ?? "Empty")
+                        }
+                        
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -46,6 +54,7 @@ struct ContentView: View {
         withAnimation {
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
+            newItem.text = newText
 
             do {
                 try viewContext.save()
